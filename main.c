@@ -3,6 +3,7 @@
 
 int main()
 {
-    hello(); // Call the function from hello.c
+    const char *myName = "Alice";
+    hello(myName); // Call the function from hello.c with a name
     return 0;
 }

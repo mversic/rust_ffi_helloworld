@@ -1,7 +1,7 @@
 #include "hello.h" // Include our header file
 #include <stdio.h> // For printf
 
-void hello(void)
+void hello(const char *name)
 {
-    printf("hello world\n");
+    printf("hello %s\n", name);
 }
