@@ -5,6 +5,3 @@ edition = "2024"
 
 [dependencies]
 hello-sys = { path = "../hello-sys" }
-
-[dev-dependencies]
-gag = "1.0.0"

@@ -1,7 +1,10 @@
 #include "hello.h" // Include our header file
-#include <stdio.h> // For printf
+#include <stdio.h> // For sprintf
 
-void hello(const char *name)
+const char *hello(const char *name)
 {
-    printf("hello %s\n", name);
+    static char messageBuffer[300]; // Buffer to store the message
+    sprintf(messageBuffer, "hello %s\n", name);
+
+    return messageBuffer;
 }

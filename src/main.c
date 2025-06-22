@@ -14,7 +14,9 @@ int main()
         // which consists entirely of characters not in "\n"
         nameBuffer[strcspn(nameBuffer, "\n")] = 0;
 
-        hello(nameBuffer); // Call the function with the input name
+        const char *helloMessage = hello(nameBuffer); // Call the function with the input name
+
+        printf("%s", helloMessage); // Call the function with the input name
     }
     else
     {
