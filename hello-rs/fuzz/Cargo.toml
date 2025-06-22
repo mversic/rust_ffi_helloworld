@@ -1,0 +1,21 @@
+[package]
+name = "hello-rs-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+
+[dependencies.hello-rs]
+path = ".."
+
+[[bin]]
+name = "fuzz_hello"
+path = "fuzz_targets/fuzz_hello.rs"
+test = false
+doc = false
+bench = false
