@@ -57,4 +57,13 @@ mod tests {
         assert!(msg.is_ok());
         assert_eq!(msg.unwrap(), "Hello, World\n");
     }
+
+    #[test]
+    fn check_internal_null_byte_error() {
+        // C strings are null-terminated, so they cannot contain null bytes internally.
+        // CString::new will return an error if this is attempted.
+        let msg = hello(Some("Ru\0st"));
+        assert!(msg.is_err());
+        assert!(msg.unwrap_err().to_string().contains("interior null byte"));
+    }
 }
