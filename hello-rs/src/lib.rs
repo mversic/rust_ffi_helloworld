@@ -1,9 +1,10 @@
 use anyhow::{Context, Result};
 use std::ffi::{CStr, CString};
 
-pub fn hello(name: &str) -> Result<String> {
+pub fn hello(name: Option<&str>) -> Result<String> {
     // Convert the Rust &str to a C-compatible null-terminated string
-    let c_name = CString::new(name)
+    // If `name` is None, default to "World". Otherwise, use the provided name.
+    let c_name = CString::new(name.unwrap_or("World"))
         .context("CString::new failed due to interior null byte on parameter 'name'")?;
 
     // Call the FFI function. The `unsafe` block is necessary because we are
@@ -30,12 +31,30 @@ mod tests {
 
     #[test]
     fn say_hello() {
-        let msg = hello("Rust");
+        let msg = hello(Some("Rust"));
 
-        // assert that the msg is of type ok
-        assert_eq!(msg.is_ok(), true);
+        // Assert that the call was successful
+        assert!(msg.is_ok());
 
         // Assert that the output is what we expect
-        assert_eq!(msg.unwrap(), "hello Rust\n");
+        assert_eq!(msg.unwrap(), "Hello, Rust\n");
+    }
+
+    #[test]
+    fn say_hello_to_world_on_empty_name() {
+        // The C function treats an empty string as a case to default to "World".
+        let msg = hello(Some(""));
+
+        assert!(msg.is_ok());
+        // Assert that an empty name defaults to "World"
+        assert_eq!(msg.unwrap(), "Hello, World\n");
+    }
+
+    #[test]
+    fn say_hello_to_world_on_none_name() {
+        // Our Rust wrapper defaults a None to "World".
+        let msg = hello(None);
+        assert!(msg.is_ok());
+        assert_eq!(msg.unwrap(), "Hello, World\n");
     }
 }
