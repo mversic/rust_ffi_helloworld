@@ -116,4 +116,26 @@ mod tests {
                 .contains("output buffer was too small")
         );
     }
+
+    #[test]
+    fn handles_multibyte_utf8_characters_correctly() {
+        // "😊" is a 4-byte UTF-8 character. This test ensures that byte lengths,
+        // not character counts, are handled correctly across the FFI boundary.
+        let name = "😊";
+        let msg = hello(Some(name));
+        assert!(msg.is_ok());
+        assert_eq!(msg.unwrap(), "Hello, 😊\n");
+    }
+
+    #[test]
+    fn handles_input_with_c_format_specifiers() {
+        // This is a defensive test. The C code uses `snprintf("...", name)`, which is safe.
+        // An unsafe implementation might do `snprintf(name, ...)` with a user-controlled
+        // string, which would be a format string vulnerability. This test confirms
+        // our implementation is not vulnerable and treats specifiers as literals.
+        let name = "user %s%s%n";
+        let msg = hello(Some(name));
+        assert!(msg.is_ok());
+        assert_eq!(msg.unwrap(), "Hello, user %s%s%n\n");
+    }
 }
