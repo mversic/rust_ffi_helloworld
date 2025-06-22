@@ -81,4 +81,39 @@ mod tests {
         assert!(msg.is_err());
         assert!(msg.unwrap_err().to_string().contains("interior null byte"));
     }
+
+    #[test]
+    fn succeeds_when_output_fits_exactly() {
+        // The internal buffer in `hello` is 300 bytes.
+        // The output format is "Hello, %s\n".
+        // "Hello, " is 7 bytes.
+        // "\n" is 1 byte.
+        // The null terminator is 1 byte.
+        // Total overhead is 9 bytes.
+        // A name of (300 - 9) = 291 bytes will result in a 299-byte string,
+        // which fits perfectly into the 300-byte buffer with its null terminator.
+        let long_name = "a".repeat(291);
+        let result = hello(Some(&long_name));
+
+        assert!(result.is_ok());
+        let expected = format!("Hello, {}\n", long_name);
+        assert_eq!(result.unwrap(), expected);
+    }
+
+    #[test]
+    fn fails_when_output_buffer_is_too_small() {
+        // A name of 292 bytes will cause the C function to report an error because
+        // the total output (7 + 292 + 1 = 300 bytes) plus the null terminator
+        // requires a 301-byte buffer, but ours is 300.
+        let long_name = "a".repeat(292);
+        let result = hello(Some(&long_name));
+
+        assert!(result.is_err(), "Expected an error, but got Ok");
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("output buffer was too small")
+        );
+    }
 }
