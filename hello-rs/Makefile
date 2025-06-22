@@ -1,3 +1,5 @@
+.PHONY: build test fuzz clean
+
 build:
 	cargo build
 

@@ -1,3 +1,5 @@
+.PHONY: build clean
+
 build:
 	cargo build
 

@@ -1,3 +1,5 @@
+.PHONY: build clean fuzz test
+
 build:
 	gcc -o hello src/main.c src/hello.c
 
