@@ -1,5 +1,7 @@
 # Rust FFI Example: Safe C Interoperability
 
+For readers: Googles Gemini Code Assist was utilized in some parts of this code. I have done my best to vet the code, but I am still learning about the subject myself so it might contain something unexpected, dangerous, stupid or all of the above. Use your own judgement.
+
 This repository demonstrates a robust and idiomatic way to interact with C code from Rust using the Foreign Function Interface (FFI). It showcases best practices for creating a safe, ergonomic Rust API on top of an unsafe C library.
 
 ## Project Overview
