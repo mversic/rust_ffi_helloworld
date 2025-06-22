@@ -9,8 +9,11 @@ fn main() {
 
     let hello_c_file = hello_source_path.join("hello.c");
     let wrapper_h_file = PathBuf::from("wrapper.h");
+    let hello_h_file = hello_source_path.join("hello.h");
 
     println!("cargo:rerun-if-changed={}", wrapper_h_file.display());
+    println!("cargo:rerun-if-changed={}", hello_c_file.display());
+    println!("cargo:rerun-if-changed={}", hello_h_file.display());
 
     // --- Compile C code ---
     // This will compile hello.c and create a static library (e.g., libhello_c_lib.a)

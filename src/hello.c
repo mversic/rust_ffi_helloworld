@@ -1,13 +1,18 @@
 #include "hello.h" // Include our header file
 #include <stdio.h> // For snprintf
 
-const char *hello(const char *name)
+int hello(const char *name, char *out_buffer, size_t buffer_len)
 {
-    static char messageBuffer[300]; // Buffer to store the message
-
     // Use "World" as a default if the provided name is NULL or empty.
     const char *effective_name = (name != NULL && name[0] != '\0') ? name : "World";
-    snprintf(messageBuffer, sizeof(messageBuffer), "Hello, %s\n", effective_name);
 
-    return messageBuffer;
+    int written = snprintf(out_buffer, buffer_len, "Hello, %s\n", effective_name);
+
+    if (written < 0 || (size_t)written >= buffer_len)
+    {
+        // An error occurred or the buffer was too small.
+        return -1;
+    }
+
+    return written;
 }
