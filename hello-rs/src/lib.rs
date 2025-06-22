@@ -1,8 +1,10 @@
+use anyhow::{Context, Result};
 use std::ffi::{CStr, CString};
 
-pub fn hello(name: &str) -> String {
+pub fn hello(name: &str) -> Result<String> {
     // Convert the Rust &str to a C-compatible null-terminated string
-    let c_name = CString::new(name).expect("CString::new failed due to interior null byte");
+    let c_name = CString::new(name)
+        .context("CString::new failed due to interior null byte on parameter 'name'")?;
 
     // Call the FFI function. The `unsafe` block is necessary because we are
     // dereferencing a raw pointer returned from C, which Rust cannot verify for safety.
@@ -18,7 +20,7 @@ pub fn hello(name: &str) -> String {
 
         // Convert the C-style string into a Rust `String`.
         // `.to_string_lossy()` is a robust way to handle potential non-UTF-8 data.
-        c_str.to_string_lossy().into_owned()
+        Ok(c_str.to_string_lossy().into_owned())
     }
 }
 
@@ -30,8 +32,10 @@ mod tests {
     fn say_hello() {
         let msg = hello("Rust");
 
+        // assert that the msg is of type ok
+        assert_eq!(msg.is_ok(), true);
+
         // Assert that the output is what we expect
-        assert_eq!(msg, "hello Rust\n");
-        // `buf` goes out of scope here, and stdout is restored.
+        assert_eq!(msg.unwrap(), "hello Rust\n");
     }
 }
