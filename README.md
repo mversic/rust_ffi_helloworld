@@ -88,8 +88,8 @@ Then, you can use the `hello` function:
 use hello_rs::hello;
 
 fn main() -> anyhow::Result<()> {
-    let greeting = hello(Some("World"))?;
-    println!("{}", greeting); // Output: Hello, World
+    let greeting = hello(Some("Rust"))?;
+    println!("{}", greeting); // Output: Hello, Rust
 
     let default_greeting = hello(None)?;
     println!("{}", default_greeting); // Output: Hello, World
