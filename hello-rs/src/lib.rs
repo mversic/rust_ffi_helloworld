@@ -1,6 +1,5 @@
 use anyhow::{Context, Result, anyhow};
 use std::ffi::CString;
-use std::os::raw::c_char;
 
 pub fn hello(name: Option<&str>) -> Result<String> {
     // Convert the optional Rust &str to an optional C-compatible null-terminated string.
@@ -11,33 +10,21 @@ pub fn hello(name: Option<&str>) -> Result<String> {
         .transpose()
         .context("CString::new failed due to interior null byte on parameter 'name'")?;
 
-    // Get a pointer to the C string, or a null pointer if `name` was `None`.
-    // The C function is designed to handle a null pointer gracefully.
-    let name_ptr = match &c_name_opt {
-        Some(s) => s.as_ptr(),
-        None => std::ptr::null(),
-    };
-
     // Create a buffer for the C function to write into.
     // We are responsible for allocating memory that the C code can use.
     let mut buffer: Vec<u8> = vec![0; 300];
 
-    // Call the FFI function. The `unsafe` block is necessary because we are calling C code,
-    // passing raw pointers, and trusting it to write safely into our buffer.
-    unsafe {
-        let written = hello_sys::hello(name_ptr, buffer.as_mut_ptr() as *mut c_char, buffer.len());
+    let written = hello_sys::hello_raw(c_name_opt.as_deref(), &mut buffer);
 
-        if written < 0 {
-            return Err(anyhow!(
-                "C function 'hello' failed: the output buffer was too small."
-            ));
-        }
-
-        // `written` is the number of bytes written (excluding the null terminator).
-        let result_slice = &buffer[..written as usize];
-        String::from_utf8(result_slice.to_vec())
-            .context("Failed to convert C output to UTF-8 string")
+    if written < 0 {
+        return Err(anyhow!(
+            "C function 'hello' failed: the output buffer was too small."
+        ));
     }
+
+    // `written` is the number of bytes written (excluding the null terminator).
+    let result_slice = &buffer[..written as usize];
+    String::from_utf8(result_slice.to_vec()).context("Failed to convert C output to UTF-8 string")
 }
 
 #[cfg(test)]
